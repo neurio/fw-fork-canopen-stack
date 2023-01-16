@@ -26,7 +26,7 @@ extern "C" {
 ******************************************************************************/
 
 #include "co_types.h"
-#include "co_cfg.h"
+#include "co_penguin_cfg.h"
 
 /******************************************************************************
 * PUBLIC DEFINES
@@ -111,7 +111,7 @@ typedef struct CO_TMR_T {
 /*! \brief  GET TICKS FOR MILLISECONDS
 *
 *    This function converts a given time into the corresponding number
-*    of timer ticks. This depends on the specific timer driver and 
+*    of timer ticks. This depends on the specific timer driver and
 *    clock frequency of the timer.
 *
 * \param time

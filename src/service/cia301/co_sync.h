@@ -26,7 +26,7 @@ extern "C" {
 ******************************************************************************/
 
 #include "co_types.h"
-#include "co_cfg.h"
+#include "co_penguin_cfg.h"
 #include "co_if.h"
 #include "co_pdo.h"
 

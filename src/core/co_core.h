@@ -26,7 +26,8 @@ extern "C" {
 ******************************************************************************/
 
 #include "co_types.h"
-#include "co_cfg.h"
+#include "ffi_debug.h"
+#include "co_penguin_cfg.h"
 
 /* basic types */
 #include "co_domain.h"
