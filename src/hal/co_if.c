@@ -24,6 +24,7 @@
 * PUBLIC FUNCTIONS
 ******************************************************************************/
 
+
 /*
 * see function definition
 */
@@ -36,8 +37,10 @@ void COIfInit(CO_IF *cif, struct CO_NODE_T *node, uint32_t freq)
     /* initialize interface structure */
     cif->Node = node;
 
+    //AMF: Dummy PenguinCAN function pointer
+
     /* initialize hardware via drivers */
-    nvm->Init();
-    timer->Init(freq);
-    can->Init();
+    nvm->Init(getPenguinCanDummy());
+    timer->Init(getPenguinCanDummy(), freq);
+    can->Init(getPenguinCanDummy());
 }

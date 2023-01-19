@@ -28,6 +28,7 @@ extern "C" {
 #include "co_types.h"
 #include "ffi_debug.h"
 #include "co_penguin_cfg.h"
+//#include "ffi_interface.h"
 
 /* basic types */
 #include "co_domain.h"
@@ -69,6 +70,11 @@ extern "C" {
 #endif //USE_LSS
 #include "co_err.h"
 #include "co_obj.h"
+
+
+//AMF Custom
+CO_PENGUIN_CAN_DUMMY_TYPE getPenguinCanDummy(void);
+void setPenguinCanDummy(CO_PENGUIN_CAN_DUMMY_TYPE x);
 
 
 /******************************************************************************

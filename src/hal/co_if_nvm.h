@@ -33,9 +33,9 @@ extern "C" {
 
 struct CO_IF_T;                /* Declaration of interface structure         */
 
-typedef void     (*CO_IF_NVM_INIT_FUNC )(void);
-typedef uint32_t (*CO_IF_NVM_READ_FUNC )(uint32_t, uint8_t *, uint32_t);
-typedef uint32_t (*CO_IF_NVM_WRITE_FUNC)(uint32_t, uint8_t *, uint32_t);
+typedef void     (*CO_IF_NVM_INIT_FUNC )(CO_PENGUIN_CAN_DUMMY_TYPE);
+typedef uint32_t (*CO_IF_NVM_READ_FUNC )(CO_PENGUIN_CAN_DUMMY_TYPE, uint32_t, uint8_t *, uint32_t);
+typedef uint32_t (*CO_IF_NVM_WRITE_FUNC)(CO_PENGUIN_CAN_DUMMY_TYPE, uint32_t, uint8_t *, uint32_t);
 
 typedef struct CO_IF_NVM_DRV_T {
     CO_IF_NVM_INIT_FUNC  Init;

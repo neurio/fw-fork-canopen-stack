@@ -24,6 +24,17 @@
 * FUNCTIONS
 ******************************************************************************/
 
+static CO_PENGUIN_CAN_DUMMY_TYPE penguinCanDummy;
+
+void setPenguinCanDummy(CO_PENGUIN_CAN_DUMMY_TYPE x){
+    penguinCanDummy = x;
+}
+
+CO_PENGUIN_CAN_DUMMY_TYPE getPenguinCanDummy(void){
+    return penguinCanDummy;
+}
+
+
 /*
 * see function definition
 */
@@ -76,7 +87,6 @@ void CONodeInit(CO_NODE *node, CO_NODE_SPEC *spec)
 void CONodeStart(CO_NODE *node)
 {
     CO_MODE mode;
-
     mode = CONmtGetMode(&node->Nmt);
     if (mode == CO_INIT) {
         CONmtBootup(&node->Nmt);

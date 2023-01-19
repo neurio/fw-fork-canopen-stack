@@ -137,7 +137,6 @@ void CONmtBootup(CO_NMT *nmt)
 
     if (nmt->Mode == CO_INIT) {
         CONmtSetMode(nmt, CO_PREOP);
-
         CO_SET_ID  (&frm, 1792 + nmt->Node->NodeId);
         CO_SET_DLC (&frm, 1);
         CO_SET_BYTE(&frm, 0, 0);
@@ -190,7 +189,7 @@ void CONmtSetMode(CO_NMT *nmt, CO_MODE mode)
 
     if (nmt->Mode != mode) {
         if (mode == CO_OPERATIONAL) {
-            
+
             COTPdoInit(nmt->Node->TPdo, nmt->Node);
             CORPdoInit(nmt->Node->RPdo, nmt->Node);
         }

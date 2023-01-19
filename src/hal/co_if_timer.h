@@ -33,12 +33,14 @@ extern "C" {
 
 struct CO_IF_T;                /* Declaration of interface structure         */
 
-typedef void     (*CO_IF_TIMER_INIT_FUNC  )(uint32_t);
-typedef void     (*CO_IF_TIMER_RELOAD_FUNC)(uint32_t);
-typedef uint32_t (*CO_IF_TIMER_DELAY_FUNC )(void);
-typedef void     (*CO_IF_TIMER_STOP_FUNC  )(void);
-typedef void     (*CO_IF_TIMER_START_FUNC )(void);
-typedef uint8_t  (*CO_IF_TIMER_UPDATE_FUNC)(void);
+
+
+typedef void     (*CO_IF_TIMER_INIT_FUNC  )(CO_PENGUIN_CAN_DUMMY_TYPE, uint32_t);
+typedef void     (*CO_IF_TIMER_RELOAD_FUNC)(CO_PENGUIN_CAN_DUMMY_TYPE, uint32_t);
+typedef uint32_t (*CO_IF_TIMER_DELAY_FUNC )(CO_PENGUIN_CAN_DUMMY_TYPE);
+typedef void     (*CO_IF_TIMER_STOP_FUNC  )(CO_PENGUIN_CAN_DUMMY_TYPE);
+typedef void     (*CO_IF_TIMER_START_FUNC )(CO_PENGUIN_CAN_DUMMY_TYPE);
+typedef uint8_t  (*CO_IF_TIMER_UPDATE_FUNC)(CO_PENGUIN_CAN_DUMMY_TYPE);
 
 typedef struct CO_IF_TIMER_DRV_T {
     CO_IF_TIMER_INIT_FUNC   Init;
@@ -67,7 +69,7 @@ void COIfTimerReload(struct CO_IF_T *cif, uint32_t reload);
 
 /*! \brief  GET TIMER DELAY
 *
-*    This function returns the delay in timer ticks until the next timer 
+*    This function returns the delay in timer ticks until the next timer
 *    event occurs.
 *
 * \param cif
