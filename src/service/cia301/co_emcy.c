@@ -126,11 +126,11 @@ static void COEmcyUpdate(CO_EMCY *emcy, uint8_t err, CO_EMCY_USR *usr, uint8_t s
 
 static void COEmcySend(CO_EMCY *emcy, uint8_t err, CO_EMCY_USR *usr, uint8_t state)
 {
-    CO_IF_FRM    frm;
-    CO_NODE     *node;
-    CO_DICT      *dir;
-    CO_EMCY_TBL *data;
-    uint8_t      n;
+    CO_IF_FRM           frm;
+    CO_NODE             *node;
+    CO_DICT             *dir;
+    const CO_EMCY_TBL   *data;
+    uint8_t             n;
 
     ASSERT_PTR(emcy->Node);
     ASSERT_PTR(emcy->Root);
@@ -170,7 +170,7 @@ static void COEmcySend(CO_EMCY *emcy, uint8_t err, CO_EMCY_USR *usr, uint8_t sta
 * PROTECTED API FUNCTIONS
 ******************************************************************************/
 
-void COEmcyInit(CO_EMCY *emcy, CO_NODE *node, CO_EMCY_TBL *root)
+void COEmcyInit(CO_EMCY *emcy, CO_NODE *node, const CO_EMCY_TBL *root)
 {
     const CO_OBJ_TYPE *hist = CO_TEMCY_HIST;
     CO_OBJ   *obj;

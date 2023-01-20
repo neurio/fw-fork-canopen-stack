@@ -137,11 +137,11 @@ typedef struct CO_EMCY_TBL_T {
 *    manage the change detection on all individual EMCY codes.
 */
 typedef struct CO_EMCY_T {
-    struct CO_NODE_T      *Node;                  /*!< parent node           */
-    struct CO_EMCY_TBL_T  *Root;                  /*!< root to EMCY table    */
-    struct CO_EMCY_HIST_T  Hist;                  /*!< EMCY history          */
-    uint8_t                Cnt[CO_EMCY_REG_NUM];  /*!< count register bits   */
-    uint8_t                Err[CO_EMCY_STORAGE];  /*!< error status storage  */
+    struct CO_NODE_T            *Node;                  /*!< parent node           */
+    const struct CO_EMCY_TBL_T  *Root;                  /*!< root to EMCY table    */
+    struct CO_EMCY_HIST_T       Hist;                  /*!< EMCY history          */
+    uint8_t                     Cnt[CO_EMCY_REG_NUM];  /*!< count register bits   */
+    uint8_t                     Err[CO_EMCY_STORAGE];  /*!< error status storage  */
 
 } CO_EMCY;
 
@@ -164,7 +164,7 @@ typedef struct CO_EMCY_T {
 * \param root
 *    pointer to the start of the User EMCY table
 */
-void COEmcyInit(CO_EMCY *emcy, struct CO_NODE_T *node, CO_EMCY_TBL *root);
+void COEmcyInit(CO_EMCY *emcy, struct CO_NODE_T *node, const CO_EMCY_TBL *root);
 
 /******************************************************************************
 * PUBLIC FUNCTIONS
