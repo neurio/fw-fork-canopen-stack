@@ -30,7 +30,7 @@
 void COIfTimerReload(CO_IF *cif, uint32_t reload)
 {
     const CO_IF_TIMER_DRV *timer = cif->Drv->Timer;
-    timer->Reload(getPenguinCanDummy(),reload);
+    timer->Reload(getPenguinCanPointer(),reload);
 }
 
 /*
@@ -39,7 +39,7 @@ void COIfTimerReload(CO_IF *cif, uint32_t reload)
 uint32_t COIfTimerDelay(CO_IF *cif)
 {
     const CO_IF_TIMER_DRV *timer = cif->Drv->Timer;
-    uint32_t delay               = timer->Delay(getPenguinCanDummy());
+    uint32_t delay               = timer->Delay(getPenguinCanPointer());
     return (delay);
 }
 
@@ -49,7 +49,7 @@ uint32_t COIfTimerDelay(CO_IF *cif)
 void COIfTimerStop(CO_IF *cif)
 {
     const CO_IF_TIMER_DRV *timer = cif->Drv->Timer;
-    timer->Stop(getPenguinCanDummy());
+    timer->Stop(getPenguinCanPointer());
 }
 
 /*
@@ -58,7 +58,7 @@ void COIfTimerStop(CO_IF *cif)
 void COIfTimerStart(CO_IF *cif)
 {
     const CO_IF_TIMER_DRV *timer = cif->Drv->Timer;
-    timer->Start(getPenguinCanDummy());
+    timer->Start(getPenguinCanPointer());
 }
 
 /*
@@ -67,6 +67,6 @@ void COIfTimerStart(CO_IF *cif)
 uint8_t COIfTimerUpdate(CO_IF *cif)
 {
     const CO_IF_TIMER_DRV *timer = cif->Drv->Timer;
-    uint8_t result               = timer->Update(getPenguinCanDummy());
+    uint8_t result               = timer->Update(getPenguinCanPointer());
     return (result);
 }

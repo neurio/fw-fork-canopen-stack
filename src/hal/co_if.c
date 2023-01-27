@@ -40,7 +40,7 @@ void COIfInit(CO_IF *cif, struct CO_NODE_T *node, uint32_t freq)
     //AMF: Dummy PenguinCAN function pointer
 
     /* initialize hardware via drivers */
-    nvm->Init(getPenguinCanDummy());
-    timer->Init(getPenguinCanDummy(), freq);
-    can->Init(getPenguinCanDummy());
+    nvm->Init(getPenguinCanPointer());
+    timer->Init(getPenguinCanPointer(), freq);
+    can->Init(getPenguinCanPointer());
 }

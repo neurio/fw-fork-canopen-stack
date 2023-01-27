@@ -24,14 +24,18 @@
 * FUNCTIONS
 ******************************************************************************/
 
-static CO_PENGUIN_CAN_DUMMY_TYPE penguinCanDummy;
+static CO_PENGUIN_CAN_POINTER_TYPE penguinCanPointer = 0;
 
-void setPenguinCanDummy(CO_PENGUIN_CAN_DUMMY_TYPE x){
-    penguinCanDummy = x;
+void setPenguinCanPointer(CO_PENGUIN_CAN_POINTER_TYPE x){
+    penguinCanPointer = x;
 }
 
-CO_PENGUIN_CAN_DUMMY_TYPE getPenguinCanDummy(void){
-    return penguinCanDummy;
+CO_PENGUIN_CAN_POINTER_TYPE getPenguinCanPointer(void){
+    return penguinCanPointer;
+}
+
+void clearPenguinCanPointer(void){
+    penguinCanPointer = 0;
 }
 
 

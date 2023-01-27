@@ -32,7 +32,7 @@ typedef int16_t int8_t;
 #endif
 
 //General self type
-typedef void (* CO_PENGUIN_CAN_DUMMY_TYPE );
+typedef void (* CO_PENGUIN_CAN_POINTER_TYPE );
 
 /******************************************************************************
 * PUBLIC MACROS

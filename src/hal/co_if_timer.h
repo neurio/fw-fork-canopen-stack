@@ -35,12 +35,12 @@ struct CO_IF_T;                /* Declaration of interface structure         */
 
 
 
-typedef void     (*CO_IF_TIMER_INIT_FUNC  )(CO_PENGUIN_CAN_DUMMY_TYPE, uint32_t);
-typedef void     (*CO_IF_TIMER_RELOAD_FUNC)(CO_PENGUIN_CAN_DUMMY_TYPE, uint32_t);
-typedef uint32_t (*CO_IF_TIMER_DELAY_FUNC )(CO_PENGUIN_CAN_DUMMY_TYPE);
-typedef void     (*CO_IF_TIMER_STOP_FUNC  )(CO_PENGUIN_CAN_DUMMY_TYPE);
-typedef void     (*CO_IF_TIMER_START_FUNC )(CO_PENGUIN_CAN_DUMMY_TYPE);
-typedef uint8_t  (*CO_IF_TIMER_UPDATE_FUNC)(CO_PENGUIN_CAN_DUMMY_TYPE);
+typedef void     (*CO_IF_TIMER_INIT_FUNC  )(CO_PENGUIN_CAN_POINTER_TYPE, uint32_t);
+typedef void     (*CO_IF_TIMER_RELOAD_FUNC)(CO_PENGUIN_CAN_POINTER_TYPE, uint32_t);
+typedef uint32_t (*CO_IF_TIMER_DELAY_FUNC )(CO_PENGUIN_CAN_POINTER_TYPE);
+typedef void     (*CO_IF_TIMER_STOP_FUNC  )(CO_PENGUIN_CAN_POINTER_TYPE);
+typedef void     (*CO_IF_TIMER_START_FUNC )(CO_PENGUIN_CAN_POINTER_TYPE);
+typedef uint8_t  (*CO_IF_TIMER_UPDATE_FUNC)(CO_PENGUIN_CAN_POINTER_TYPE);
 
 typedef struct CO_IF_TIMER_DRV_T {
     CO_IF_TIMER_INIT_FUNC   Init;

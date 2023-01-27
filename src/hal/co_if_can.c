@@ -31,7 +31,7 @@ void COIfCanInit(CO_IF *cif, struct CO_NODE_T *node)
 {
     const CO_IF_CAN_DRV *can = cif->Drv->Can;
     (void)node;
-    can->Init(getPenguinCanDummy());
+    can->Init(getPenguinCanPointer());
 }
 
 /*
@@ -42,7 +42,7 @@ int16_t COIfCanRead (CO_IF *cif, CO_IF_FRM *frm)
     int16_t err;
     const CO_IF_CAN_DRV *can = cif->Drv->Can;
 
-    err = can->Read(getPenguinCanDummy(), frm);
+    err = can->Read(getPenguinCanPointer(), frm);
     if (err < (int16_t)0) {
         cif->Node->Error = CO_ERR_IF_CAN_READ;
     }
@@ -56,7 +56,7 @@ int16_t COIfCanSend(CO_IF *cif, CO_IF_FRM *frm)
 {
     int16_t err;
     const CO_IF_CAN_DRV *can = cif->Drv->Can;
-    err = can->Send(getPenguinCanDummy(), frm);
+    err = can->Send(getPenguinCanPointer(), frm);
     if (err < (int16_t)0) {
         cif->Node->Error = CO_ERR_IF_CAN_SEND;
     }
@@ -69,7 +69,7 @@ int16_t COIfCanSend(CO_IF *cif, CO_IF_FRM *frm)
 void COIfCanReset(CO_IF *cif)
 {
     const CO_IF_CAN_DRV *can = cif->Drv->Can;
-    can->Reset(getPenguinCanDummy());
+    can->Reset(getPenguinCanPointer());
 }
 
 /*
@@ -78,7 +78,7 @@ void COIfCanReset(CO_IF *cif)
 void COIfCanClose(CO_IF *cif)
 {
     const CO_IF_CAN_DRV *can = cif->Drv->Can;
-    can->Close(getPenguinCanDummy());
+    can->Close(getPenguinCanPointer());
 }
 
 /*
@@ -94,5 +94,5 @@ void COIfCanEnable(CO_IF *cif, uint32_t baudrate)
       	cif->Node->Baudrate = baudrate;
     }
 
-    can->Enable(getPenguinCanDummy(), baudrate);
+    can->Enable(getPenguinCanPointer(), baudrate);
 }

@@ -30,7 +30,7 @@
 uint32_t COIfNvmRead(struct CO_IF_T *cif, uint32_t start, uint8_t *buffer, uint32_t size)
 {
     const CO_IF_NVM_DRV *nvm = cif->Drv->Nvm;
-    uint32_t num = nvm->Read(getPenguinCanDummy(), start, buffer, size);
+    uint32_t num = nvm->Read(getPenguinCanPointer(), start, buffer, size);
     return (num);
 }
 
@@ -40,6 +40,6 @@ uint32_t COIfNvmRead(struct CO_IF_T *cif, uint32_t start, uint8_t *buffer, uint3
 uint32_t COIfNvmWrite(struct CO_IF_T *cif, uint32_t start, uint8_t *buffer, uint32_t size)
 {
     const CO_IF_NVM_DRV *nvm = cif->Drv->Nvm;
-    uint32_t num = nvm->Write(getPenguinCanDummy(), start, buffer, size);
+    uint32_t num = nvm->Write(getPenguinCanPointer(), start, buffer, size);
     return (num);
 }

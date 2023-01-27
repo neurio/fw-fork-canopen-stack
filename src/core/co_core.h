@@ -73,9 +73,9 @@ extern "C" {
 
 
 //AMF Custom
-CO_PENGUIN_CAN_DUMMY_TYPE getPenguinCanDummy(void);
-void setPenguinCanDummy(CO_PENGUIN_CAN_DUMMY_TYPE x);
-
+CO_PENGUIN_CAN_POINTER_TYPE getPenguinCanPointer(void);
+void setPenguinCanPointer(CO_PENGUIN_CAN_POINTER_TYPE x);
+void clearPenguinCanPointer(void);
 
 /******************************************************************************
 * PUBLIC TYPES

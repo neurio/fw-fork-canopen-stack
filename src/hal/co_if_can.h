@@ -226,12 +226,12 @@ typedef struct CO_IF_FRM_T {         /*!< Type, which represents a CAN frame */
     uint8_t   DLC;                   /*!< CAN message data length code (DLC) */
 } CO_IF_FRM;
 
-typedef void    (*CO_IF_CAN_INIT_FUNC  )(CO_PENGUIN_CAN_DUMMY_TYPE);
-typedef void    (*CO_IF_CAN_ENABLE_FUNC)(CO_PENGUIN_CAN_DUMMY_TYPE, uint32_t);
-typedef int16_t (*CO_IF_CAN_READ_FUNC  )(CO_PENGUIN_CAN_DUMMY_TYPE, CO_IF_FRM *);
-typedef int16_t (*CO_IF_CAN_SEND_FUNC  )(CO_PENGUIN_CAN_DUMMY_TYPE, CO_IF_FRM *);
-typedef void    (*CO_IF_CAN_RESET_FUNC )(CO_PENGUIN_CAN_DUMMY_TYPE);
-typedef void    (*CO_IF_CAN_CLOSE_FUNC )(CO_PENGUIN_CAN_DUMMY_TYPE);
+typedef void    (*CO_IF_CAN_INIT_FUNC  )(CO_PENGUIN_CAN_POINTER_TYPE);
+typedef void    (*CO_IF_CAN_ENABLE_FUNC)(CO_PENGUIN_CAN_POINTER_TYPE, uint32_t);
+typedef int16_t (*CO_IF_CAN_READ_FUNC  )(CO_PENGUIN_CAN_POINTER_TYPE, CO_IF_FRM *);
+typedef int16_t (*CO_IF_CAN_SEND_FUNC  )(CO_PENGUIN_CAN_POINTER_TYPE, CO_IF_FRM *);
+typedef void    (*CO_IF_CAN_RESET_FUNC )(CO_PENGUIN_CAN_POINTER_TYPE);
+typedef void    (*CO_IF_CAN_CLOSE_FUNC )(CO_PENGUIN_CAN_POINTER_TYPE);
 
 typedef struct CO_IF_CAN_DRV_T {
     CO_IF_CAN_INIT_FUNC   Init;
