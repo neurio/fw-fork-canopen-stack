@@ -24,7 +24,7 @@
 * FUNCTIONS
 ******************************************************************************/
 
-static CO_PENGUIN_CAN_POINTER_TYPE penguinCanPointer = 0;
+static CO_PENGUIN_CAN_POINTER_TYPE penguinCanPointer = NULL;
 
 void setPenguinCanPointer(CO_PENGUIN_CAN_POINTER_TYPE x){
     penguinCanPointer = x;
