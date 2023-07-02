@@ -43,16 +43,6 @@ union BlockDownloadInitRequestCmd_t {
     uint8_t cmd;
 };
 
-//union BlockDownloadInitResponseCmd_t {
-//    struct{
-//        uint8_t scs         : 3;
-//        uint8_t reserved    : 2;
-//        uint8_t sc          : 1;
-//        uint8_t ss          : 2;
-//    }
-//    uint8_t cmd;
-//};
-
 union BlockDownloadSubBlockRequestCmd_t {
     struct{
         uint8_t c           : 1;
@@ -60,15 +50,6 @@ union BlockDownloadSubBlockRequestCmd_t {
     }
     uint8_t cmd;
 };
-
-//union BlockDownloadSubBlockResponseCmd_t {
-//    struct {
-//        uint8_t scs         : 3;
-//        uint8_t reserved    : 3;
-//        uint8_t ss          : 2;
-//    }
-//    uint8_t cmd;
-//};
 
 union BlockDownloadFinalizeRequestCmd_t {
     struct {
@@ -79,15 +60,6 @@ union BlockDownloadFinalizeRequestCmd_t {
     }
     uint8_t cmd;
 };
-
-//union BlockDownloadFinalizeResponseCmd_t {
-//    struct {
-//        uint8_t scs         : 3;
-//        uint8_t reserved    : 3;
-//        uint8_t ss          : 2;
-//    }
-//    uint8_t cmd;
-//};
 
 union BlockDownloadResponseCmd_t {
     struct {
@@ -118,14 +90,19 @@ union BlockDownloadResponseCmd_t {
 #define BLOCK_DOWNLOAD_S_SIZE_INDICATED     1
 
 // server/client subcommand
-#define BLOCK_DOWNLOAD_CMD_SS_CS_INITIATE  0
-#define BLOCK_DOWNLOAD_CMD_SS_CS_END       1
+#define BLOCK_DOWNLOAD_CMD_SS_CS_INITIATE       0
+#define BLOCK_DOWNLOAD_CMD_SS_CS_END            1
+#define BLOCK_DOWNLOAD_CMD_SS_DOWNLOAD_RESPONSE 2
 
 // client continue bit
 #define BLOCK_DOWNLOAD_CMD_C_CONTINUE_SEGMENTS  0
 #define BLOCK_DOWNLOAD_CMD_C_NO_MORE_SEGMENTS   1
 
+/********************************/
+#define BLOCK_DOWNLOAD_FRM_INIT_RESPONSE_BLKSIZE_BYTE_OFFSET    4
 
+
+/********************************/
 #define CMD_OFFSET_BITS 5
 #define CMD_OFFSET_MASK    0x7 
 #define GET_CMD(cmd) (((cmd)>>CMD_OFFSET_BITS)&CMD_OFFSET_MASK)

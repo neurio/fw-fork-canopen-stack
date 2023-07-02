@@ -443,7 +443,7 @@ static CO_ERR COCSdoInitUpdloadBlock       (CO_CSDO *csdo);
 static CO_ERR COCSdoUploadSubBlock         (CO_CSDO *csdo);
 
 /******************************************************************************
-* Block Upload Transfer Functions 
+* Block Download Transfer Functions 
 * ****************************************************************************/
 // Set up client side after getting confirmation from the server
 static CO_ERR COCSdoInitDownloadBlock      (CO_CSDO *csdo)
@@ -455,7 +455,7 @@ static CO_ERR COCSdoInitDownloadBlock      (CO_CSDO *csdo)
     uint8_t   n;
     uint32_t  width;
     uint8_t   c_bit = 1;
-    BlockDownloadInitRequestCmd_t cmd;
+    BlockDownloadResponseCmd_t cmd;
     CO_IF_FRM frm;
 
     Idx = CO_GET_WORD(csdo->Frm, 1u);
@@ -463,12 +463,21 @@ static CO_ERR COCSdoInitDownloadBlock      (CO_CSDO *csdo)
     if ((Idx == csdo->Tfer.Idx) &&
         (Sub == csdo->Tfer.Sub)) {
 
+        if (cmd.sc == BLOCK_DOWNLOAD_CMD_SC_CC_CRC_SUPPORTED) {
+            // cbt TODO: implement CRC handling
+        }
+        // reusing size variable
+        csdo->Tfer.Size = CO_GET_BYTE(csdo->Frm, BLOCK_DOWNLOAD_FRM_INIT_RESPONSE_BLKSIZE_BYTE_OFFSET);
+
+
         CO_SET_ID  (&frm, csdo->TxId);
         CO_SET_DLC (&frm, 8u);
+
+         /* clean frm data */
         CO_SET_LONG(&frm, 0, 0u);
         CO_SET_LONG(&frm, 0, 4u);
 
-    } else {
+     } else {
         COCSdoAbort(csdo, CO_SDO_ERR_TBIT); 
         COCSdoTransferFinalize(csdo);
     }
@@ -581,10 +590,12 @@ CO_ERR COCSdoResponse(CO_CSDO *csdo)
     }
     
     if (csdo->Tfer.Type == CO_CSDO_TRANSFER_DOWNLOAD_BLOCK) {
-        // cbt TODO: Need to check CRC bit from server and need some way to 
-        // detect that response if from init request?
-        if (BlockDownloadResponseCmd_t)cmd.ss == BLOCK_DOWNLOAD_CMD_SS_CS_INITIATE) {
-            // response back from init or sub-block command
+        if ((BlockDownloadResponseCmd_t)cmd.ss == BLOCK_DOWNLOAD_CMD_SS_CS_INITIATE) {
+            // response back from init 
+            // cbt TODO: Check CRC response from server and handle here
+            return COCSdoDownloadSubBlock(csdo);
+        }
+        else if ((BlockDownloadResponseCmd_t)cmd.ss == BLOCK_DOWNLOAD_CMD_SS_DOWNLOAD_RESPONSE) {
             return COCSdoDownloadSubBlock(csdo);
         }
         else{
@@ -594,6 +605,7 @@ CO_ERR COCSdoResponse(CO_CSDO *csdo)
     }
     else if (csdo->Tfer.Type == CO_CSDO_TRANSFER_UPLOAD_BLOCK) {
     }
+
     else if (csdo->Tfer.Type == CO_CSDO_TRANSFER_UPLOAD_SEGMENT) {
         if (cmd == 0x41u) {
             (void)COCSdoInitUploadSegmented(csdo);
