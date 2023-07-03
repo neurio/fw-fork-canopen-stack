@@ -458,16 +458,17 @@ static CO_ERR COCSdoInitDownloadBlock      (CO_CSDO *csdo)
     BlockDownloadResponseCmd_t cmd;
     CO_IF_FRM frm;
 
-    Idx = CO_GET_WORD(csdo->Frm, 1u);
-    Sub = CO_GET_BYTE(csdo->Frm, 3u);
-    if ((Idx == csdo->Tfer.Idx) &&
+    Idx = CO_GET_WORD(csdo->Frm, BLOCK_DOWNLOAD_FRM_INIT_RESPONSE_IDX_BYTE_OFFSET);
+    Sub = CO_GET_BYTE(csdo->Frm, BLOCK_DOWNLOAD_FRM_INIT_RESPONSE_SUB_BYTE_OFFSET);
+    // verfiy block transfer from the correct Idx and Sub
+    if ((cmd.scs == BLOCK_DOWNLOAD_CMD_SCS) && 
+        (Idx == csdo->Tfer.Idx) &&
         (Sub == csdo->Tfer.Sub)) {
 
         if (cmd.sc == BLOCK_DOWNLOAD_CMD_SC_CC_CRC_SUPPORTED) {
             // cbt TODO: implement CRC handling
         }
-        // reusing size variable
-        csdo->Tfer.Size = CO_GET_BYTE(csdo->Frm, BLOCK_DOWNLOAD_FRM_INIT_RESPONSE_BLKSIZE_BYTE_OFFSET);
+        CO_CSDO_BLOCK.Block_Size = CO_GET_BYTE(csdo->Frm, BLOCK_DOWNLOAD_FRM_INIT_RESPONSE_BLKSIZE_BYTE_OFFSET);
 
 
         CO_SET_ID  (&frm, csdo->TxId);
@@ -483,8 +484,34 @@ static CO_ERR COCSdoInitDownloadBlock      (CO_CSDO *csdo)
     }
     return result; 
 }
+
+static CO_ERR COCSdoDownloadSubBlock_Request( CO_CDSO *csdo, CO_CDSO_BLOCK *block ) {
+    CO_ERR    result = CO_ERR_SDO_SILENT;
+    uint32_t width;
+    int n;
+    CO_IF_FRM frm;
+    BlockDownloadSubBlockRequestCmd_t cmd;
+
+    cmd.c = BLOCK_DOWNLOAD_CMD_C_NO_MORE_SEGMENTS;
+
+    while (block->seqNum < block->Block_Size) {
+        width = block.Size - (block.Block_Start_Index + block.Block_Index);
+        if (width > BLOCK_DOWNLOAD_FRM_SUBBLOCK_REQUEST_SEGDATA_BYTE_SIZE){
+            width = BLOCK_DOWNLOAD_FRM_SUBBLOCK_REQUEST_SEGDATA_BYTE_SIZE;
+            cmd.c = BLOCK_DOWNLOAD_CMD_C_CONTINUE_SEGMENTS;
+        }
+        for (n = width; n > 0; n--){
+            // send the byte and increment the index
+            CO_SET_BYTE(&frm, block->Buf[block->Block_Index++];
+        }
+        cmd.seqno = block->seqNum;
+        block->seqNum++;
+    }
+    return result;
+}
+
 // cbt TODO: Implement this function
-static CO_ERR COCSdoDownloadSubBlock       (CO_CDSO *csdo)
+static CO_ERR COCSdoDownloadSubBlock       (CO_CSDO *csdo)
 {
     CO_ERR    result = CO_ERR_SDO_SILENT;
     uint32_t  ticks;
@@ -495,17 +522,13 @@ static CO_ERR COCSdoDownloadSubBlock       (CO_CDSO *csdo)
     CO_IF_FRM frm;
 
     cmd = CO_GET_BYTE(csdo->Frm, 0u);
-    uint8_t askseq = CO_GET_BYTE(csdo->Frm, 1u);
-    uint8_t blksize = CO_GET_BYTE(csdo->Frm, 2u); 
+    uint8_t askseq = CO_GET_BYTE(csdo->Frm, BLOCK_DOWNLOAD_FRM_SUBBLOCK_RESPONSE_ACKSEQ_BYTE_OFFSET);
+    uint8_t blksize = CO_GET_BYTE(csdo->Frm, BLOCK_DOWNLOAD_FRM_SUBBLOCK_RESPONSE_BLKSIZE_BYTE_OFFSET); 
     
     // verfy that we are looking at a sub-block response from server
-    // scs = 5, ss = 2
-    if( cmd = ((0x5 << 5)|(0x2)) ){
-        // TODO: resend any lost data
-        if 
-
-    }
-    else {
+    if( cmd.scs == BLOCK_DOWNLOAD_CMD_SCS ) {
+        // pick up sending where server stopped receiving.
+    } else {
         // TODO: Abort and send finalize 
     }
 }
