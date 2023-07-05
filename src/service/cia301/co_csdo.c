@@ -185,6 +185,9 @@ static void COCSdoTransferFinalize(CO_CSDO *csdo)
         csdo->Tfer.Buf_Idx = 0;
         csdo->Tfer.TBit = 0;
 
+        /* Reset block transfer information */
+        CO_CSDO_BLOCK_INIT(csdo->Block);
+
         /* Release SDO client for next request */
         csdo->Frm   = NULL;
         csdo->State = CO_CSDO_STATE_IDLE;
@@ -468,7 +471,7 @@ static CO_ERR COCSdoInitDownloadBlock      (CO_CSDO *csdo)
         if (cmd.sc == BLOCK_DOWNLOAD_CMD_SC_CC_CRC_SUPPORTED) {
             // cbt TODO: implement CRC handling
         }
-        CO_CSDO_BLOCK.Block_Size = CO_GET_BYTE(csdo->Frm, BLOCK_DOWNLOAD_FRM_INIT_RESPONSE_BLKSIZE_BYTE_OFFSET);
+        csdo->Block.Size = CO_GET_BYTE(csdo->Frm, BLOCK_DOWNLOAD_FRM_INIT_RESPONSE_BLKSIZE_BYTE_OFFSET);
 
 
         CO_SET_ID  (&frm, csdo->TxId);
@@ -478,34 +481,58 @@ static CO_ERR COCSdoInitDownloadBlock      (CO_CSDO *csdo)
         CO_SET_LONG(&frm, 0, 0u);
         CO_SET_LONG(&frm, 0, 4u);
 
+        // send the first sub-block
+        return CO_ERR COCSdoDownloadSubBlock_Request( csdo ) 
      } else {
+        // cbt TODO: verify error code and finalize function
         COCSdoAbort(csdo, CO_SDO_ERR_TBIT); 
         COCSdoTransferFinalize(csdo);
     }
     return result; 
 }
 
-static CO_ERR COCSdoDownloadSubBlock_Request( CO_CDSO *csdo, CO_CDSO_BLOCK *block ) {
+static CO_ERR COCSdoDownloadSubBlock_Request( CO_CDSO *csdo ) {
     CO_ERR    result = CO_ERR_SDO_SILENT;
     uint32_t width;
     int n;
     CO_IF_FRM frm;
     BlockDownloadSubBlockRequestCmd_t cmd;
+    CO_CSDO_BLOCK_t* block = csdo->Block;
 
     cmd.c = BLOCK_DOWNLOAD_CMD_C_NO_MORE_SEGMENTS;
 
-    while (block->seqNum < block->Block_Size) {
-        width = block.Size - (block.Block_Start_Index + block.Block_Index);
+    while (block->seqNum < block->NumSegs) {
+        width = block.Size - block.Index;
         if (width > BLOCK_DOWNLOAD_FRM_SUBBLOCK_REQUEST_SEGDATA_BYTE_SIZE){
             width = BLOCK_DOWNLOAD_FRM_SUBBLOCK_REQUEST_SEGDATA_BYTE_SIZE;
-            cmd.c = BLOCK_DOWNLOAD_CMD_C_CONTINUE_SEGMENTS;
+            block->Continue = BLOCK_DOWNLOAD_CMD_C_CONTINUE_SEGMENTS;
+        } else {
+            // last segment is being sent
+            block->Continue = BLOCK_DOWNLOAD_CMD_C_NO_MORE_SEGMENTS;
         }
-        for (n = width; n > 0; n--){
+        cmd.c = block->Continue;
+        block->BytesInLastSeg = width;
+
+        for (n = 1; n <= width; n++){
             // send the byte and increment the index
-            CO_SET_BYTE(&frm, block->Buf[block->Block_Index++];
+            CO_SET_BYTE(&frm, block->Buf[block->Index++], n);
+        }
+        // fill unused bytes with zeros
+        while (n <= BLOCK_DOWNLOAD_FRM_SUBBLOCK_REQUEST_SEGDATA_BYTE_SIZE){
+            CO_SET_BYTE(&frm, 0u, n);
+            n++;
         }
         cmd.seqno = block->seqNum;
         block->seqNum++;
+        
+        CO_SET_BYTE(&frm, cmd, 0u);
+
+         /* refresh timer */
+        (void)COTmrDelete(&(csdo->Node->Tmr), csdo->Tfer.Tmr);
+        ticks = COTmrGetTicks(&(csdo->Node->Tmr), csdo->Tfer.Tmt, CO_TMR_UNIT_1MS);
+        csdo->Tfer.Tmr = COTmrCreate(&(csdo->Node->Tmr), ticks, 0, &COCSdoTimeout, csdo);
+
+        (void)COIfCanSend(&csdo->Node->If, &frm);
     }
     return result;
 }
@@ -515,7 +542,8 @@ static CO_ERR COCSdoDownloadSubBlock       (CO_CSDO *csdo)
 {
     CO_ERR    result = CO_ERR_SDO_SILENT;
     uint32_t  ticks;
-    uint8_t   cmd;
+    BlockDonwloadResponseCmd_t cmd;
+    BlockDownloadFinalizeRequestCmd_t finalize_cmd;
     uint8_t   n;
     uint32_t  width;
     uint8_t   c_bit = 1;
@@ -527,13 +555,53 @@ static CO_ERR COCSdoDownloadSubBlock       (CO_CSDO *csdo)
     
     // verfy that we are looking at a sub-block response from server
     if( cmd.scs == BLOCK_DOWNLOAD_CMD_SCS ) {
-        // pick up sending where server stopped receiving.
+        // send next block if final block has not been sent or if server did 
+        // not receive all data in final block
+        if( (csdo->Block.Continue = BLOCK_DOWNLOAD_CMD_C_CONTINUE_SEGMENTS ) || \
+            (blksize != csdo->Block.segNum) ){
+            // we have more segments to send, update response from server and send another block
+            csdo->Block.NumSegs = blksize;
+            // update the block start index based on last received seq from server
+            csdo->Block.Block_Start_Index += (akseq * BLOCK_DOWNLOAD_FRM_SUBBLOCK_REQUEST_SEGDATA_BYTE_SIZE);
+            // reset the block index
+            csdo->Block.Index = csdo->Block.Block_Start_Index;
+
+            COCSdoDownloadSubBlock_Request( csdo );
+        } else {
+            // last block was sent and server confirmed receipt of all 
+            // segments. Send the block download end frame
+            // Generate and send end transfer frame
+            finalize_cmd.byte = 0;
+            finalize_cmd.ccs = BLOCK_DOWNLOAD_CMD_CCS;
+            finalize_cmd.n =  BLOCK_DOWNLOAD_FRM_SUBBLOCK_REQUEST_SEGDATA_BYTE_SIZE - csdo->Block.BytesInLastSeg + 1;
+            finalize_cmd.cs = BLOCK_DOWNLOAD_CMD_SS_CS_END;
+            
+            // TODO: send CRC bytes if CRC agreed on
+            CO_SET_BYTE(&frm, cmd, 0u);
+
+             /* refresh timer */
+            (void)COTmrDelete(&(csdo->Node->Tmr), csdo->Tfer.Tmr);
+            ticks = COTmrGetTicks(&(csdo->Node->Tmr), csdo->Tfer.Tmt, CO_TMR_UNIT_1MS);
+            csdo->Tfer.Tmr = COTmrCreate(&(csdo->Node->Tmr), ticks, 0, &COCSdoTimeout, csdo);
+
+            (void)COIfCanSend(&csdo->Node->If, &frm);
+        }
     } else {
-        // TODO: Abort and send finalize 
+        // cbt TODO: verify error code and finalize function
+        COCSdoAbort(csdo, CO_SDO_ERR_TBIT); 
+        COCSdoTransferFinalize(csdo);
     }
 }
 // cbt TODO: Implement this function
-static CO_ERR COCSdoFinishDownloadBlock    (CO_CDSO *csdo);
+static CO_ERR COCSdoFinishDownloadBlock    (CO_CSDO *csdo) {
+    CO_ERR    result = CO_ERR_SDO_SILENT;
+    BlockDonwloadResponseCmd_t cmd;
+
+    cmd = CO_GET_BYTE(csdo->Frm, 0u);
+    if( cmd.scs == BLOCK_DOWNLOAD_CMD_SCS ) {
+
+    COCSdoTransferFinalize(csdo);
+}
 
 /******************************************************************************
 * PROTECTED API FUNCTIONS

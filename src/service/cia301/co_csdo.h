@@ -58,7 +58,7 @@ typedef union BlockDownloadFinalizeRequestCmd_t {
         uint8_t reserved    : 1;
         uint8_t sc          : 1;
     }
-    uint8_t cmd;
+    uint8_t byte;
 };
 
 typedef union BlockDownloadResponseCmd_t {
@@ -74,7 +74,7 @@ typedef union BlockDownloadResponseCmd_t {
         }
         uint8_t ss          : 2;
     }
-    uint8_t cmd;
+    uint8_t byte;
 };
 
 /***** Block Download CMD bit offsets ****************************************/
@@ -226,10 +226,23 @@ typedef struct CO_CSDO_BLOCK_T {
     uint32_t    Size;               /*!< Number of bytes to transfer                    */
     uint32_t    *Buf;               /*!< Pointer to data to transfer                    */
     uint32_t    Block_Start_Index;  /*!< Starting buffer index of the last block sent   */
-    uint32_t    Block_Index;        /*!< Index of last byte sent                        */
-    uint8_t     Block_Size;         /*!< Number of segements to send in this block      */ 
-    uint8_t     seqNum;             /*!< Sequence number of current sub block           */
+    uint32_t    Index;              /*!< Index of last byte sent                        */
+    uint8_t     NumSegs;            /*!< Number of segements to send in this block      */ 
+    uint8_t     SeqNum;             /*!< Sequence number of current sub block           */
+    uint8_t     Continue;           /*!< Set if last sub-block is being sent            */
+    uint8_t     BytesInLastSeg      /*!< Number of bytes sent in the last segment       */
 } CO_CSDO_BLOCK;
+
+#define CO_CSDO_BLOCK_INIT(block) do {      \
+    block.Size              = 0;      \
+    block.Buff              = NULL;   \
+    block.Block_Start_Index = 0;      \
+    block.Index             = 0;      \
+    block.NumSegs           = 0;      \
+    block.SegNum            = 0;      \
+    block.Continue          = BLOCK_DOWNLOAD_CMD_C_CONTINUE_SEGMENTS;\
+    block.BytesInLastSeg    = 0;      \ 
+} while(0);
 
 /*! \brief SDO CLIENT TRANSFER
  *
@@ -250,6 +263,7 @@ typedef struct CO_CSDO_TRANSFER_T {
     CO_CSDO_CALLBACK_T     Call;        /*!< Notification callback           */
     uint32_t               Buf_Idx;     /*!< Buffer Index                    */
     uint8_t                TBit;        /*!< Segment toggle bit              */
+    CO_CSDO_BLOCK_T        Block;
 } CO_CSDO_TRANSFER;
 
 /*! \brief SDO CLIENT
