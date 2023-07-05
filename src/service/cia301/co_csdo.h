@@ -370,6 +370,13 @@ CO_ERR COCSdoRequestDownload(CO_CSDO *csdo,
                              CO_CSDO_CALLBACK_T callback,
                              uint32_t timeout);
 
+CO_ERR COCSdoRequestDownloadBlock(CO_CSDO *csdo,
+                             uint32_t key,
+                             uint8_t *buffer,
+                             uint32_t size,
+                             CO_CSDO_CALLBACK_T callback,
+                             uint32_t timeout);
+
 /******************************************************************************
 * PROTECTED API FUNCTIONS
 ******************************************************************************/
