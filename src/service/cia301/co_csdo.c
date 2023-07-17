@@ -24,8 +24,8 @@
 
 typedef struct {
     bool blockMode;
-    bool CRC;
-    uint16_t CRC_value;
+    bool crc;
+    uint16_t crc_value;
 } blockTransfer_t;
 
 /******************************************************************************
@@ -822,7 +822,7 @@ CO_ERR COCSdoRequestDownloadFull(CO_CSDO *csdo,
         csdo->Tfer.Type = CO_CSDO_TRANSFER_DOWNLOAD_BLOCK;
         cmd = (CLIENT_BLOCK_DOWNLOAD_INIT_CMD << CMD_OFFSET_BITS ) | \
               (1 << CLIENT_BLOCK_SIZE_INDICATOR_BIT);    
-        if (block->CRC == true){
+        if (block->crc == true){
             cmd |= (1 << CLIENT_BLOCK_DOWNLOAD_REQUEST_CRC_BIT);
         }
 
@@ -997,11 +997,11 @@ CO_ERR COCSdoRequestDownloadBlock(CO_CSDO *csdo,
                              uint32_t size,
                              CO_CSDO_CALLBACK_T callback,
                              uint32_t timeout,
-                             bool CRC)
+                             bool crc)
 {
     blockTransfer_t block;
     block.blockMode = true;
-    block.CRC = CRC;
+    block.crc = crc;
     return COCSdoRequestDownloadFull(csdo, key, buffer, size, callback, timeout, &block);
 }
 
