@@ -61,43 +61,79 @@ typedef union {
     uint8_t byte;
 } BlockDownloadFinalizeRequestCmd_t;
 
-typedef union {
-    struct {
-        uint8_t scs         : 3;    /*<! Server Command Specifier */
-        union {
-            struct {
-                uint8_t reservedInit    : 2;
-                // this field only used in Init response
-                uint8_t sc              : 1;    /*<! Server CRC Support */
-            };
-            uint8_t reserved            : 3;
-        };
-        uint8_t ss          : 2;    /*<! Server Subcommand */
-    };
-    uint8_t byte;
-} BlockDownloadResponseCmd_t;
+//typedef union {
+//    struct {
+//        uint8_t scs         : 3;    /*<! Server Command Specifier */
+//        union {
+//            struct {
+//                uint8_t reservedInit    : 2;
+//                // this field only used in Init response
+//                uint8_t sc              : 1;    /*<! Server CRC Support */
+//            };
+//            uint8_t reserved            : 3;
+//        };
+//        uint8_t ss          : 2;    /*<! Server Subcommand */
+//    };
+//    uint8_t byte;
+//} BlockDownloadResponseCmd_t;
+
+//typedef union {
+//    struct {
+//        uint8_t scs         : 3;    /*<! Server Command Specifier */
+//        uint8_t reserved    : 2;
+//        // this field only used in Init response
+//        uint8_t sc          : 1;    /*<! Server CRC Support */
+//        uint8_t ss          : 2;    /*<! Server Subcommand */
+//    };
+//    uint8_t byte;
+//} BlockDownloadResponseCmd_t;
+
+#define READ_BITS(x,offset,mask)    ((x >> offset) & mask)
+//#define SET_BITS(x,val,offset,mask)     \
+//    do{                                 \
+//        x &= ~(mask << offset);         \
+//        x |= (val << offset);           \
+//    } while(0);
+#define SET_BITS(val,offset,mask)   ((val & mask) << offset)
+#define CLEAR_BITS(offset, mask)    (~(mask << offset))
 
 /***** Block Download CMD bit offsets ****************************************/
 // server/client command specifier
 #define BLOCK_DOWNLOAD_CMD_SCS  5
 #define BLOCK_DOWNLOAD_CMD_CCS  6
+#define BLOCK_DOWNLOAD_CMD_SCS_CCS_BIT_OFFSET       5
+#define BLOCK_DOWNLOAD_CMD_SCS_CCS_BIT_MASK         0b111
 
 // server client CRC support
-#define BlOCK_DOWNLOAD_CMD_SC_CC_CRC_SUPPORTED      0
-#define BLOCK_DOWNLOAD_CMD_SC_CC_CRC_NOT_SUPPORTED  1
+#define BLOCK_DOWNLOAD_CMD_SC_CC_CRC_NOT_SUPPORTED  0
+#define BlOCK_DOWNLOAD_CMD_SC_CC_CRC_SUPPORTED      1
 
 // download init size indicator
-#define BLOCK_DOWNLOAD_S_SIZE_NOT_INDICATED 0
-#define BLOCK_DOWNLOAD_S_SIZE_INDICATED     1
+#define BLOCK_DOWNLOAD_CMD_S_SIZE_NOT_INDICATED     0
+#define BLOCK_DOWNLOAD_CMD_S_SIZE_INDICATED         1
 
 // server/client subcommand
 #define BLOCK_DOWNLOAD_CMD_SS_CS_INITIATE       0
 #define BLOCK_DOWNLOAD_CMD_SS_CS_END            1
 #define BLOCK_DOWNLOAD_CMD_SS_DOWNLOAD_RESPONSE 2
+#define BLOCK_DOWNLOAD_CMD_CS_BIT_OFFSET        0
+#define BLOCK_DOWNLOAD_CMD_CS_BIT_MASK          0b1
+#define BLOCK_DOWNLOAD_CMD_SS_BIT_OFFSET        0
+#define BLOCK_DOWNLOAD_CMD_SS_BIT_MASK          0b11
 
 // client continue bit
 #define BLOCK_DOWNLOAD_CMD_C_CONTINUE_SEGMENTS  0
 #define BLOCK_DOWNLOAD_CMD_C_NO_MORE_SEGMENTS   1
+#define BLOCK_DOWNLOAD_CMD_C_BIT_OFFSET         7
+#define BLOCK_DOWNLOAD_CMD_C_BIT_MASK           0b1
+
+// init cmd bit offsets
+#define BLOCK_DOWNLOAD_INIT_REQUEST_CMD_CRC_BIT_OFFSET  2 
+#define BLOCK_DOWNLOAD_INIT_REQUEST_CMD_S_BIT_OFFSET    1
+
+// sub-block seqnum
+#define BLOCK_DOWNLOAD_SUBBLOCK_CMD_SEQNUM_BIT_OFFSET   0
+#define BLOCK_DOWNLOAD_SUBBLOCK_CMD_SEQNUM_BIT_MASK     0b1111111
 
 /***** Block download byte offsets *******************************************/
 #define CANOPEN_SDO_MULTIPLEXER_IDX_OFFSET                          0
