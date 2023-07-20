@@ -513,11 +513,9 @@ static CO_ERR COCSdoInitDownloadBlock      (CO_CSDO *csdo)
         CO_SET_LONG(&frm, 0, 0u);
         CO_SET_LONG(&frm, 0, 4u);
 
-        // TODO: Without this print statement, the data bytes to not get printed when using candump
         // send the first sub-block
         return COCSdoDownloadSubBlock_Request( csdo );
      } else {
-        // cbt TODO: verify error code and finalize function
         COCSdoAbort(csdo, CO_SDO_ERR_TBIT); 
         COCSdoTransferFinalize(csdo);
     }
@@ -536,7 +534,6 @@ static CO_ERR COCSdoDownloadSubBlock_Request( CO_CSDO *csdo ) {
     block->SeqNum = 1;
     block->Continue = BLOCK_DOWNLOAD_CMD_C_CONTINUE_SEGMENTS;
 
-    // TODO: handle case where seqNum in zero (empty data)
     while ((block->SeqNum <= block->NumSegs) && \
            (block->Continue == BLOCK_DOWNLOAD_CMD_C_CONTINUE_SEGMENTS) ) {
 
@@ -596,7 +593,7 @@ static CO_ERR COCSdoDownloadSubBlock       (CO_CSDO *csdo)
     uint32_t  ticks;
     uint8_t cmd;
     CO_IF_FRM frm;
-
+    CO_CSDO_BLOCK_T* block = &csdo->Tfer.Block;
 
     cmd = CO_GET_BYTE(csdo->Frm, 0u);
     uint8_t akseq = CO_GET_BYTE(csdo->Frm, BLOCK_DOWNLOAD_FRM_SUBBLOCK_RESPONSE_ACKSEQ_BYTE_OFFSET);
@@ -618,19 +615,15 @@ static CO_ERR COCSdoDownloadSubBlock       (CO_CSDO *csdo)
     if( cmd_scs == BLOCK_DOWNLOAD_CMD_SCS ) {
         // send next block if final block has not been sent or if server did 
         // not receive all data in final block
-        if( csdo->Tfer.Block.Continue == BLOCK_DOWNLOAD_CMD_C_CONTINUE_SEGMENTS ){ 
-            // TODO: Now doesn't have a check to make sure that all of the subblocks were received by 
-            // the server. Need to implement this. Might need to refactor this whole block since it 
-            // was developed with the assumption that blksize returned by the server took into account
-            // the size of data being sent.
+        
+        // we have more segments to send, update response from server and send another block
+        block->NumSegs = blksize;
+        // update the block start index based on last received seq from server
+        block->Block_Start_Index += (akseq * BLOCK_DOWNLOAD_FRM_SUBBLOCK_REQUEST_SEGDATA_BYTE_SIZE);
+        // reset the block index
+        block->Index = block->Block_Start_Index;
 
-            // we have more segments to send, update response from server and send another block
-            csdo->Tfer.Block.NumSegs = blksize;
-            // update the block start index based on last received seq from server
-            csdo->Tfer.Block.Block_Start_Index += (akseq * BLOCK_DOWNLOAD_FRM_SUBBLOCK_REQUEST_SEGDATA_BYTE_SIZE);
-            // reset the block index
-            csdo->Tfer.Block.Index = csdo->Tfer.Block.Block_Start_Index;
-
+        if( block->Index < block->Size ){
             COCSdoDownloadSubBlock_Request( csdo );
         } else {
             // last block was sent and server confirmed receipt of all 
@@ -640,7 +633,7 @@ static CO_ERR COCSdoDownloadSubBlock       (CO_CSDO *csdo)
             cmd = SET_BITS( BLOCK_DOWNLOAD_CMD_CCS,                 \
                             BLOCK_DOWNLOAD_CMD_SCS_CCS_BIT_OFFSET,  \
                             BLOCK_DOWNLOAD_CMD_SCS_CCS_BIT_MASK);
-            cmd |= SET_BITS(BLOCK_DOWNLOAD_FRM_SUBBLOCK_REQUEST_SEGDATA_BYTE_SIZE - csdo->Tfer.Block.BytesInLastSeg + 1,   \
+            cmd |= SET_BITS(BLOCK_DOWNLOAD_FRM_SUBBLOCK_REQUEST_SEGDATA_BYTE_SIZE - block->BytesInLastSeg + 1,   \
                             BLOCK_DOWNLOAD_CMD_END_N_BIT_OFFSET,    \
                             BLOCK_DOWNLOAD_CMD_END_N_BIT_MASK);
             cmd |= SET_BITS(BLOCK_DOWNLOAD_CMD_SS_CS_END,           \
@@ -658,7 +651,6 @@ static CO_ERR COCSdoDownloadSubBlock       (CO_CSDO *csdo)
             (void)COIfCanSend(&csdo->Node->If, &frm);
         }
     } else {
-        // cbt TODO: verify error code and finalize function
         COCSdoAbort(csdo, CO_SDO_ERR_TBIT); 
         COCSdoTransferFinalize(csdo);
     }
