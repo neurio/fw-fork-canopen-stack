@@ -479,7 +479,7 @@ static CO_ERR COCSdoUploadSubBlock         (CO_CSDO *csdo);
 static CO_ERR COCSdoInitDownloadBlock      (CO_CSDO *csdo)
 {
     FFI_DEBUG_PRINT(9001);
-    CO_ERR    result = CO_ERR_NONE;
+    CO_ERR    result = CO_ERR_SDO_SILENT;
     uint32_t  ticks;
     uint16_t  Idx;
     uint8_t   Sub;
@@ -536,7 +536,7 @@ static CO_ERR COCSdoInitDownloadBlock      (CO_CSDO *csdo)
 
 static CO_ERR COCSdoDownloadSubBlock_Request( CO_CSDO *csdo ) {
     FFI_DEBUG_PRINT(9002);
-    CO_ERR    result = CO_ERR_NONE;
+    CO_ERR    result = CO_ERR_SDO_SILENT;
     uint32_t  ticks;
     uint32_t width;
     int n;
@@ -610,7 +610,7 @@ static CO_ERR COCSdoDownloadSubBlock_Request( CO_CSDO *csdo ) {
 static CO_ERR COCSdoDownloadSubBlock       (CO_CSDO *csdo)
 {
     FFI_DEBUG_PRINT(9003);
-    CO_ERR    result = CO_ERR_NONE;
+    CO_ERR    result = CO_ERR_SDO_SILENT;
     uint32_t  ticks;
     uint8_t cmd;
     BlockDownloadFinalizeRequestCmd_t finalize_cmd;
@@ -629,11 +629,23 @@ static CO_ERR COCSdoDownloadSubBlock       (CO_CSDO *csdo)
             BLOCK_DOWNLOAD_CMD_SCS_CCS_BIT_OFFSET,  \
             BLOCK_DOWNLOAD_CMD_SCS_CCS_BIT_MASK);
     
+    CO_SET_ID  (&frm, csdo->TxId       );
+    CO_SET_DLC (&frm, 8                );
+
+     /* clean frm data */
+    CO_SET_LONG(&frm, 0, 0u);
+    CO_SET_LONG(&frm, 0, 4u);
+
+    // TODO: this check is done before the call to this function so redundant but leaving for now. 
     if( cmd_scs == BLOCK_DOWNLOAD_CMD_SCS ) {
         // send next block if final block has not been sent or if server did 
         // not receive all data in final block
-        if( (csdo->Tfer.Block.Continue = BLOCK_DOWNLOAD_CMD_C_CONTINUE_SEGMENTS ) || \
-            (blksize != csdo->Tfer.Block.SeqNum) ){
+        if( csdo->Tfer.Block.Continue == BLOCK_DOWNLOAD_CMD_C_CONTINUE_SEGMENTS ){ 
+            // TODO: Now doesn't have a check to make sure that all of the subblocks were received by 
+            // the server. Need to implement this. Might need to refactor this whole block since it 
+            // was developed with the assumption that blksize returned by the server took into account
+            // the size of data being sent.
+
             // we have more segments to send, update response from server and send another block
             csdo->Tfer.Block.NumSegs = blksize;
             // update the block start index based on last received seq from server
@@ -643,14 +655,27 @@ static CO_ERR COCSdoDownloadSubBlock       (CO_CSDO *csdo)
 
             COCSdoDownloadSubBlock_Request( csdo );
         } else {
+            FFI_DEBUG_PRINT(9020);
             // last block was sent and server confirmed receipt of all 
             // segments. Send the block download end frame
             // Generate and send end transfer frame
-            finalize_cmd.byte = 0;
-            finalize_cmd.ccs = BLOCK_DOWNLOAD_CMD_CCS;
-            finalize_cmd.n =  BLOCK_DOWNLOAD_FRM_SUBBLOCK_REQUEST_SEGDATA_BYTE_SIZE - csdo->Tfer.Block.BytesInLastSeg + 1;
-            finalize_cmd.cs = BLOCK_DOWNLOAD_CMD_SS_CS_END;
-            
+            //finalize_cmd.byte = 0;
+            //finalize_cmd.ccs = BLOCK_DOWNLOAD_CMD_CCS;
+            //finalize_cmd.n =  BLOCK_DOWNLOAD_FRM_SUBBLOCK_REQUEST_SEGDATA_BYTE_SIZE - csdo->Tfer.Block.BytesInLastSeg + 1;
+            //finalize_cmd.cs = BLOCK_DOWNLOAD_CMD_SS_CS_END;
+
+            cmd = SET_BITS( BLOCK_DOWNLOAD_CMD_CCS,                 \
+                            BLOCK_DOWNLOAD_CMD_SCS_CCS_BIT_OFFSET,  \
+                            BLOCK_DOWNLOAD_CMD_SCS_CCS_BIT_MASK);
+            cmd |= SET_BITS(BLOCK_DOWNLOAD_FRM_SUBBLOCK_REQUEST_SEGDATA_BYTE_SIZE - csdo->Tfer.Block.BytesInLastSeg + 1,   \
+                            BLOCK_DOWNLOAD_CMD_END_N_BIT_OFFSET,    \
+                            BLOCK_DOWNLOAD_CMD_END_N_BIT_MASK);
+            cmd |= SET_BITS(BLOCK_DOWNLOAD_CMD_SS_CS_END,           \
+                            BLOCK_DOWNLOAD_CMD_CS_BIT_OFFSET,       \
+                            BLOCK_DOWNLOAD_CMD_CS_BIT_MASK);
+            FFI_DEBUG_PRINT(cmd);    
+            FFI_DEBUG_PRINT(csdo->Tfer.Block.BytesInLastSeg);
+
             // TODO: send CRC bytes if CRC agreed on
             CO_SET_BYTE(&frm, cmd, 0u);
 

@@ -88,14 +88,14 @@ typedef union {
 //    uint8_t byte;
 //} BlockDownloadResponseCmd_t;
 
-#define READ_BITS(x,offset,mask)    ((x >> offset) & mask)
+#define READ_BITS(x,offset,mask)    (((x) >> (offset)) & (mask))
 #define CLEAR_SET_BITS(x,val,offset,mask)   \
     do{                                     \
-        x &= ~(mask << offset);             \
-        x |= (val << offset);               \
+        x &= ~((mask) << (offset));         \
+        x |= ((val) << (offset));           \
     } while(0);
-#define SET_BITS(val,offset,mask)   ((val & mask) << offset)
-#define CLEAR_BITS(x,offset, mask)  (x &= ~(mask << offset))
+#define SET_BITS(val,offset,mask)   (((val)  & (mask)) << (offset))
+#define CLEAR_BITS(x,offset, mask)  (x &= ~((mask) << (offset)))
         
 
 /***** Block Download CMD bit offsets ****************************************/
@@ -135,6 +135,10 @@ typedef union {
 // sub-block seqnum
 #define BLOCK_DOWNLOAD_SUBBLOCK_CMD_SEQNUM_BIT_OFFSET   0
 #define BLOCK_DOWNLOAD_SUBBLOCK_CMD_SEQNUM_BIT_MASK     0b1111111
+
+// end frame offsets
+#define BLOCK_DOWNLOAD_CMD_END_N_BIT_OFFSET             2
+#define BLOCK_DOWNLOAD_CMD_END_N_BIT_MASK               0b111
 
 /***** Block download byte offsets *******************************************/
 #define CANOPEN_SDO_MULTIPLEXER_IDX_OFFSET                          0
