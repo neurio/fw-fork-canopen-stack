@@ -89,13 +89,14 @@ typedef union {
 //} BlockDownloadResponseCmd_t;
 
 #define READ_BITS(x,offset,mask)    ((x >> offset) & mask)
-//#define SET_BITS(x,val,offset,mask)     \
-//    do{                                 \
-//        x &= ~(mask << offset);         \
-//        x |= (val << offset);           \
-//    } while(0);
+#define CLEAR_SET_BITS(x,val,offset,mask)   \
+    do{                                     \
+        x &= ~(mask << offset);             \
+        x |= (val << offset);               \
+    } while(0);
 #define SET_BITS(val,offset,mask)   ((val & mask) << offset)
-#define CLEAR_BITS(offset, mask)    (~(mask << offset))
+#define CLEAR_BITS(x,offset, mask)  (x &= ~(mask << offset))
+        
 
 /***** Block Download CMD bit offsets ****************************************/
 // server/client command specifier
