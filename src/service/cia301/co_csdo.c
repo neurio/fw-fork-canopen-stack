@@ -479,12 +479,8 @@ static CO_ERR COCSdoUploadSubBlock         (CO_CSDO *csdo);
 static CO_ERR COCSdoInitDownloadBlock      (CO_CSDO *csdo)
 {
     CO_ERR    result = CO_ERR_SDO_SILENT;
-    uint32_t  ticks;
     uint16_t  Idx;
     uint8_t   Sub;
-    uint8_t   n;
-    uint32_t  width;
-    uint8_t   c_bit = 1;
     uint8_t cmd;
     CO_IF_FRM frm;
 
@@ -599,10 +595,6 @@ static CO_ERR COCSdoDownloadSubBlock       (CO_CSDO *csdo)
     CO_ERR    result = CO_ERR_SDO_SILENT;
     uint32_t  ticks;
     uint8_t cmd;
-    BlockDownloadFinalizeRequestCmd_t finalize_cmd;
-    uint8_t   n;
-    uint32_t  width;
-    uint8_t   c_bit = 1;
     CO_IF_FRM frm;
 
 
@@ -644,10 +636,6 @@ static CO_ERR COCSdoDownloadSubBlock       (CO_CSDO *csdo)
             // last block was sent and server confirmed receipt of all 
             // segments. Send the block download end frame
             // Generate and send end transfer frame
-            //finalize_cmd.byte = 0;
-            //finalize_cmd.ccs = BLOCK_DOWNLOAD_CMD_CCS;
-            //finalize_cmd.n =  BLOCK_DOWNLOAD_FRM_SUBBLOCK_REQUEST_SEGDATA_BYTE_SIZE - csdo->Tfer.Block.BytesInLastSeg + 1;
-            //finalize_cmd.cs = BLOCK_DOWNLOAD_CMD_SS_CS_END;
 
             cmd = SET_BITS( BLOCK_DOWNLOAD_CMD_CCS,                 \
                             BLOCK_DOWNLOAD_CMD_SCS_CCS_BIT_OFFSET,  \
