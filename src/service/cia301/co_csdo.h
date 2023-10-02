@@ -346,10 +346,13 @@ CO_ERR COCSdoRequestUploadBlock(CO_CSDO *csdo,
  *   Size of downloaded data
  *
  * \param callback
- *   Notification callback on tranfer end (complete or abort)
+ *   Notification callback on transfer end (complete or abort)
  *
  * \param timeout
  *   SDO server response timeout in milliseconds
+ *
+ * \param block
+ *   Block transfer object. Can be null for segmented
  *
  * \retval  ==CO_ERR_NONE   transfer initiated successfuly
  * \retval  !=CO_ERR_NONE   SDO client is busy or invalid
@@ -362,14 +365,6 @@ CO_ERR COCSdoRequestDownload(CO_CSDO *csdo,
                              CO_CSDO_CALLBACK_T callback,
                              uint32_t timeout,
                              blockTransfer_t *block);
-
-CO_ERR COCSdoRequestDownloadBlock(CO_CSDO *csdo,
-                             uint32_t key,
-                             uint8_t *buffer,
-                             uint32_t size,
-                             CO_CSDO_CALLBACK_T callback,
-                             uint32_t timeout,
-                             bool crc);
 
 /******************************************************************************
 * PROTECTED API FUNCTIONS

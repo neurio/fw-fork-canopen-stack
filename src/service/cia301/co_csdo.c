@@ -775,6 +775,7 @@ CO_ERR COCSdoResponse(CO_CSDO *csdo)
         }
     }
     else if (csdo->Tfer.Type == CO_CSDO_TRANSFER_UPLOAD_BLOCK) {
+        //TODO: Implement Block Upload: https://neurio.atlassian.net/browse/FWU-328
     }
 
     else if (csdo->Tfer.Type == CO_CSDO_TRANSFER_UPLOAD_SEGMENT) {
@@ -813,7 +814,7 @@ CO_ERR COCSdoResponse(CO_CSDO *csdo)
     return (result);
 }
 
-CO_ERR COCSdoRequestDownloadFull(CO_CSDO *csdo,
+static CO_ERR COCSdoRequestDownloadFull(CO_CSDO *csdo,
                              uint32_t key,
                              uint8_t *buffer,
                              uint32_t size,
