@@ -42,7 +42,7 @@ static CO_ERR COCSdoInitDownloadSegmented  (CO_CSDO *csdo);
 static CO_ERR COCSdoDownloadSegmented      (CO_CSDO *csdo);
 static CO_ERR COCSdoFinishDownloadSegmented(CO_CSDO *csdo);
 
-static CO_ERR COCSdoInitUpdloadBlock       (CO_CSDO *csdo);
+static CO_ERR COCSdoInitUploadBlock        (CO_CSDO *csdo);
 static CO_ERR COCSdoUploadSubBlock         (CO_CSDO *csdo);
 static CO_ERR COCSdoInitDownloadBlock      (CO_CSDO *csdo);
 static CO_ERR COCSdoDownloadSubBlock_Request    (CO_CSDO *csdo);
@@ -468,7 +468,7 @@ static CO_ERR COCSdoFinishDownloadSegmented(CO_CSDO *csdo)
 * Block Upload Transfer Functions 
 * ****************************************************************************/
 // cbt TODO: Implement this function
-static CO_ERR COCSdoInitUpdloadBlock       (CO_CSDO *csdo);
+static CO_ERR COCSdoInitUploadBlock        (CO_CSDO *csdo);
 // cbt TODO: Implement this function
 static CO_ERR COCSdoUploadSubBlock         (CO_CSDO *csdo);
 
@@ -534,7 +534,7 @@ static CO_ERR COCSdoDownloadSubBlock_Request( CO_CSDO *csdo ) {
     block->SeqNum = 1;
     block->Continue = BLOCK_DOWNLOAD_CMD_C_CONTINUE_SEGMENTS;
 
-    while ((block->SeqNum <= block->NumSegs) && \
+    while ((block->SeqNum <= block->NumSegs) && 
            (block->Continue == BLOCK_DOWNLOAD_CMD_C_CONTINUE_SEGMENTS) ) {
 
         CO_SET_ID  (&frm, csdo->TxId       );
@@ -553,9 +553,9 @@ static CO_ERR COCSdoDownloadSubBlock_Request( CO_CSDO *csdo ) {
             // last segment is being sent
             block->Continue = BLOCK_DOWNLOAD_CMD_C_NO_MORE_SEGMENTS;
         }
-        CLEAR_SET_BITS(cmd,                             \
-                block->Continue,                        \
-                BLOCK_DOWNLOAD_CMD_C_BIT_OFFSET,        \
+        CLEAR_SET_BITS(cmd,                             
+                block->Continue,                        
+                BLOCK_DOWNLOAD_CMD_C_BIT_OFFSET,        
                 BLOCK_DOWNLOAD_CMD_C_BIT_MASK);
 
         block->BytesInLastSeg = width;
@@ -570,8 +570,8 @@ static CO_ERR COCSdoDownloadSubBlock_Request( CO_CSDO *csdo ) {
             n++;
         }
         // set the seq num in the cmd byte
-        cmd |= SET_BITS(block->SeqNum,                          \
-                BLOCK_DOWNLOAD_SUBBLOCK_CMD_SEQNUM_BIT_OFFSET,  \
+        cmd |= SET_BITS(block->SeqNum,                          
+                BLOCK_DOWNLOAD_SUBBLOCK_CMD_SEQNUM_BIT_OFFSET,  
                 BLOCK_DOWNLOAD_SUBBLOCK_CMD_SEQNUM_BIT_MASK);
         block->SeqNum++;
         
@@ -600,8 +600,8 @@ static CO_ERR COCSdoDownloadSubBlock       (CO_CSDO *csdo)
     uint8_t blksize = CO_GET_BYTE(csdo->Frm, BLOCK_DOWNLOAD_FRM_SUBBLOCK_RESPONSE_BLKSIZE_BYTE_OFFSET); 
     
     // verfy that we are looking at a sub-block response from server
-    uint8_t cmd_scs = READ_BITS(cmd,                \
-            BLOCK_DOWNLOAD_CMD_SCS_CCS_BIT_OFFSET,  \
+    uint8_t cmd_scs = READ_BITS(cmd,                
+            BLOCK_DOWNLOAD_CMD_SCS_CCS_BIT_OFFSET,  
             BLOCK_DOWNLOAD_CMD_SCS_CCS_BIT_MASK);
     
     CO_SET_ID  (&frm, csdo->TxId       );
@@ -630,14 +630,14 @@ static CO_ERR COCSdoDownloadSubBlock       (CO_CSDO *csdo)
             // segments. Send the block download end frame
             // Generate and send end transfer frame
 
-            cmd = SET_BITS( BLOCK_DOWNLOAD_CMD_CCS,                 \
-                            BLOCK_DOWNLOAD_CMD_SCS_CCS_BIT_OFFSET,  \
+            cmd = SET_BITS( BLOCK_DOWNLOAD_CMD_CCS,                 
+                            BLOCK_DOWNLOAD_CMD_SCS_CCS_BIT_OFFSET,  
                             BLOCK_DOWNLOAD_CMD_SCS_CCS_BIT_MASK);
-            cmd |= SET_BITS(BLOCK_DOWNLOAD_FRM_SUBBLOCK_REQUEST_SEGDATA_BYTE_SIZE - block->BytesInLastSeg + 1,   \
-                            BLOCK_DOWNLOAD_CMD_END_N_BIT_OFFSET,    \
+            cmd |= SET_BITS(BLOCK_DOWNLOAD_FRM_SUBBLOCK_REQUEST_SEGDATA_BYTE_SIZE - block->BytesInLastSeg + 1,   
+                            BLOCK_DOWNLOAD_CMD_END_N_BIT_OFFSET,    
                             BLOCK_DOWNLOAD_CMD_END_N_BIT_MASK);
-            cmd |= SET_BITS(BLOCK_DOWNLOAD_CMD_SS_CS_END,           \
-                            BLOCK_DOWNLOAD_CMD_CS_BIT_OFFSET,       \
+            cmd |= SET_BITS(BLOCK_DOWNLOAD_CMD_SS_CS_END,           
+                            BLOCK_DOWNLOAD_CMD_CS_BIT_OFFSET,       
                             BLOCK_DOWNLOAD_CMD_CS_BIT_MASK);
 
             // TODO: send CRC bytes if CRC agreed on
@@ -749,12 +749,12 @@ CO_ERR COCSdoResponse(CO_CSDO *csdo)
     }
     
     if (csdo->Tfer.Type == CO_CSDO_TRANSFER_DOWNLOAD_BLOCK) {
-        uint8_t ss = READ_BITS(cmd,                 \
-                BLOCK_DOWNLOAD_CMD_SS_BIT_OFFSET,   \
+        uint8_t ss = READ_BITS(cmd,                 
+                BLOCK_DOWNLOAD_CMD_SS_BIT_OFFSET,   
                 BLOCK_DOWNLOAD_CMD_SS_BIT_MASK);
 
-        uint8_t scs = READ_BITS(cmd,                    \
-                BLOCK_DOWNLOAD_CMD_SCS_CCS_BIT_OFFSET,  \
+        uint8_t scs = READ_BITS(cmd,                    
+                BLOCK_DOWNLOAD_CMD_SCS_CCS_BIT_OFFSET,  
                 BLOCK_DOWNLOAD_CMD_SCS_CCS_BIT_MASK);
 
         if( scs == BLOCK_DOWNLOAD_CMD_SCS ){
@@ -867,7 +867,7 @@ CO_ERR COCSdoRequestDownloadFull(CO_CSDO *csdo,
         csdo->Tfer.Block.Size = size;
 
         csdo->Tfer.Type = CO_CSDO_TRANSFER_DOWNLOAD_BLOCK;
-        cmd = (CLIENT_BLOCK_DOWNLOAD_INIT_CMD << CMD_OFFSET_BITS ) | \
+        cmd = (CLIENT_BLOCK_DOWNLOAD_INIT_CMD << CMD_OFFSET_BITS ) | 
               (BLOCK_DOWNLOAD_CMD_S_SIZE_INDICATED << BLOCK_DOWNLOAD_INIT_REQUEST_CMD_S_BIT_OFFSET);    
         if (block->crc == true){
             cmd |= (BlOCK_DOWNLOAD_CMD_SC_CC_CRC_SUPPORTED << CLIENT_BLOCK_DOWNLOAD_REQUEST_CRC_BIT);
@@ -937,6 +937,7 @@ CO_CSDO *COCSdoFind(struct CO_NODE_T *node, uint8_t num)
     return (result);
 }
 
+//TODO: Implement the upload side of block transfer
 CO_ERR COCSdoRequestUpload(CO_CSDO *csdo,
                            uint32_t key,
                            uint8_t *buf,
@@ -948,11 +949,11 @@ CO_ERR COCSdoRequestUpload(CO_CSDO *csdo,
 }
 
 CO_ERR COCSdoRequestUploadBlock(CO_CSDO *csdo,
-                           uint32_t key,
-                           uint8_t *buf,
-                           uint32_t size,
-                           CO_CSDO_CALLBACK_T callback,
-                           uint32_t timeout)
+                            uint32_t key,
+                            uint8_t *buf,
+                            uint32_t size,
+                            CO_CSDO_CALLBACK_T callback,
+                            uint32_t timeout)
 {
     return COCSdoRequestUploadFull(csdo, key, buf, size, callback, timeout, true);
 }
@@ -1030,26 +1031,13 @@ CO_ERR COCSdoRequestUploadFull(CO_CSDO *csdo,
 
 CO_ERR COCSdoRequestDownload(CO_CSDO *csdo,
                              uint32_t key,
-                             uint8_t *buffer,
-                             uint32_t size,
-                             CO_CSDO_CALLBACK_T callback,
-                             uint32_t timeout)
-{
-    return COCSdoRequestDownloadFull(csdo, key, buffer, size, callback, timeout, NULL);
-}
-
-CO_ERR COCSdoRequestDownloadBlock(CO_CSDO *csdo,
-                             uint32_t key,
-                             uint8_t *buffer,
+                             uint8_t *buf,
                              uint32_t size,
                              CO_CSDO_CALLBACK_T callback,
                              uint32_t timeout,
-                             bool crc)
+                             blockTransfer_t *block)
 {
-    blockTransfer_t block;
-    block.blockMode = true;
-    block.crc = crc;
-    return COCSdoRequestDownloadFull(csdo, key, buffer, size, callback, timeout, &block);
+    return COCSdoRequestDownloadFull(csdo, key, buf, size, callback, timeout, NULL);
 }
 
 

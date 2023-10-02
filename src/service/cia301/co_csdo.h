@@ -360,7 +360,8 @@ CO_ERR COCSdoRequestDownload(CO_CSDO *csdo,
                              uint8_t *buf,
                              uint32_t size,
                              CO_CSDO_CALLBACK_T callback,
-                             uint32_t timeout);
+                             uint32_t timeout,
+                             blockTransfer_t *block);
 
 CO_ERR COCSdoRequestDownloadBlock(CO_CSDO *csdo,
                              uint32_t key,
