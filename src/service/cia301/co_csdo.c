@@ -501,6 +501,7 @@ static CO_ERR COCSdoInitDownloadBlock      (CO_CSDO *csdo)
         (Idx == csdo->Tfer.Idx) &&
         (Sub == csdo->Tfer.Sub)) {
 
+        //TODO: part of https://neurio.atlassian.net/browse/FWU-426
         // uint8_t cmd_cc = READ_BITS(cmd, BLOCK_DOWNLOAD_INIT_REQUEST_CMD_CRC_BIT_OFFSET, 0x01);
         // if (cmd_cc == BLOCK_DOWNLOAD_CMD_SC_CC_CRC_SUPPORTED) {
         // }
