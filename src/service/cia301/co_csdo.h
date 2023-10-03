@@ -51,7 +51,7 @@ extern "C" {
 
 // server client CRC support
 #define BLOCK_DOWNLOAD_CMD_SC_CC_CRC_NOT_SUPPORTED  0
-#define BlOCK_DOWNLOAD_CMD_SC_CC_CRC_SUPPORTED      1
+#define BLOCK_DOWNLOAD_CMD_SC_CC_CRC_SUPPORTED      1
 
 // download init size indicator
 #define BLOCK_DOWNLOAD_CMD_S_SIZE_NOT_INDICATED     0
@@ -215,6 +215,7 @@ typedef struct {
     uint8_t     SeqNum;             /*!< Sequence number of current sub block           */
     uint8_t     Continue;           /*!< Set if last sub-block is being sent            */
     uint8_t     BytesInLastSeg;     /*!< Number of bytes sent in the last segment       */
+    uint16_t    crc;                /*!< CTC of data to be sent                         */
 } CO_CSDO_BLOCK_T;
 
 #define CO_CSDO_BLOCK_INIT(block) do {      \
