@@ -642,7 +642,7 @@ static CO_ERR COCSdoDownloadSubBlock       (CO_CSDO *csdo)
                             BLOCK_DOWNLOAD_CMD_CS_BIT_MASK);
 
             // Send crc from the csdo transfer block
-            // CO_SET_WORD(&frm, csdo->Tfer.Block.crc, 1u);
+            CO_SET_WORD(&frm, csdo->Tfer.Block.crc, 1u);
 
             CO_SET_BYTE(&frm, cmd, 0u);
 
