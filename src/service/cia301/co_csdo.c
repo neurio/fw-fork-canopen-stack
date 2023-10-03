@@ -61,7 +61,7 @@ CO_ERR COCSdoRequestDownloadFull(CO_CSDO *csdo,
                              uint32_t timeout,
                              blockTransfer_t* block);
 
-// cbt TODO: change bool block to structure like for download
+// cbt TODO: Update UploadFull function to take blockTransfer_t instead of a block boolean
 CO_ERR COCSdoRequestUploadFull(CO_CSDO *csdo,
                             uint32_t key,
                             uint8_t *buf,
