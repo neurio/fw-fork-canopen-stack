@@ -36,8 +36,6 @@ static CO_ERR COCSdoInitDownloadSegmented  (CO_CSDO *csdo);
 static CO_ERR COCSdoDownloadSegmented      (CO_CSDO *csdo);
 static CO_ERR COCSdoFinishDownloadSegmented(CO_CSDO *csdo);
 
-// static CO_ERR COCSdoInitUploadBlock        (CO_CSDO *csdo);
-// static CO_ERR COCSdoUploadSubBlock         (CO_CSDO *csdo);
 static CO_ERR COCSdoInitDownloadBlock      (CO_CSDO *csdo);
 static CO_ERR COCSdoDownloadSubBlock_Request    (CO_CSDO *csdo);
 static CO_ERR COCSdoDownloadSubBlock       (CO_CSDO *csdo);
@@ -459,13 +457,6 @@ static CO_ERR COCSdoFinishDownloadSegmented(CO_CSDO *csdo)
     COCSdoTransferFinalize(csdo);
     return CO_ERR_SDO_SILENT;
 }
-/******************************************************************************
-* Block Upload Transfer Functions 
-* ****************************************************************************/
-// cbt TODO: Implement this function
-// static CO_ERR COCSdoInitUploadBlock        (CO_CSDO *csdo);
-// cbt TODO: Implement this function
-// static CO_ERR COCSdoUploadSubBlock         (CO_CSDO *csdo);
 
 /******************************************************************************
 * Block Download Transfer Functions 
@@ -522,7 +513,8 @@ static CO_ERR COCSdoDownloadSubBlock_Request( CO_CSDO *csdo ) {
     CO_ERR    result = CO_ERR_SDO_SILENT;
     uint32_t  ticks;
     uint32_t width;
-    uint32_t n;
+    uint32_t byte_offset;
+
     CO_IF_FRM frm;
     uint8_t cmd = 0;
     CO_CSDO_BLOCK_T* block = &csdo->Tfer.Block;
@@ -556,14 +548,14 @@ static CO_ERR COCSdoDownloadSubBlock_Request( CO_CSDO *csdo ) {
 
         block->BytesInLastSeg = width;
 
-        for (n = 1; n <= width; n++){
+        for (byte_offset = 1; byte_offset <= width; byte_offset++){
             // send the byte and increment the index
-            CO_SET_BYTE(&frm, block->Buf[block->Index++], n);
+            CO_SET_BYTE(&frm, block->Buf[block->Index++], byte_offset);
         }
         // fill any unused bytes with zeros (should be false until last segment)
-        while (n <= BLOCK_DOWNLOAD_FRM_SUBBLOCK_REQUEST_SEGDATA_BYTE_SIZE){
-            CO_SET_BYTE(&frm, 0u, n);
-            n++;
+        while (byte_offset <= BLOCK_DOWNLOAD_FRM_SUBBLOCK_REQUEST_SEGDATA_BYTE_SIZE){
+            CO_SET_BYTE(&frm, 0u, byte_offset);
+            byte_offset++;
         }
         // set the seq num in the cmd byte
         cmd |= SET_BITS(block->SeqNum,                          
@@ -629,6 +621,8 @@ static CO_ERR COCSdoDownloadSubBlock       (CO_CSDO *csdo)
             cmd = SET_BITS( BLOCK_DOWNLOAD_CMD_CCS,                 
                             BLOCK_DOWNLOAD_CMD_SCS_CCS_BIT_OFFSET,  
                             BLOCK_DOWNLOAD_CMD_SCS_CCS_BIT_MASK);
+
+            // Added for block transfer functionality
             cmd |= SET_BITS(BLOCK_DOWNLOAD_FRM_SUBBLOCK_REQUEST_SEGDATA_BYTE_SIZE - block->BytesInLastSeg,   
                             BLOCK_DOWNLOAD_CMD_END_N_BIT_OFFSET,    
                             BLOCK_DOWNLOAD_CMD_END_N_BIT_MASK);

@@ -133,15 +133,11 @@ extern "C" {
 * PUBLIC TYPES
 ******************************************************************************/
 
-/*! \brief Block Transfer Type
-*
-*    This structure holds the block mode, crc, and crc_value.
-*
-*/
+/*! \brief Block Transfer Type */
 typedef struct {
-    bool blockMode;
-    bool crc;
-    uint16_t crc_value;
+    bool blockMode;      /*!< select SDO transfer mode */
+    bool crc;            /*!< Transfer including CRC */
+    uint16_t crc_value;  /*!< Space for CRC value */
 } blockTransfer_t;
 
 /*! \brief SDO CLIENT STATE
