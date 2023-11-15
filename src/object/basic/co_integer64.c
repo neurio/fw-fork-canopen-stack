@@ -24,6 +24,12 @@
 * PRIVATE DEFINES
 ******************************************************************************/
 
+/*
+This caste macro is unsafe, prefer ((uint32_t)8) or ideally wrap the caste in a static inline
+
+#define COT_ENTRY_SIZE_ (8)
+static inline uint32_t COT_getEntrySize(void) {return COT_ENTRY_SIZE_ }
+*/
 #define COT_ENTRY_SIZE    (uint32_t)8
 
 /******************************************************************************

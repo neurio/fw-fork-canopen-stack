@@ -128,7 +128,7 @@ int16_t COTmrCreate(CO_TMR      *tmr,
                     void        *para)
 {
     CO_TMR_ACTION *act;
-    CO_TMR_TIME   *tn;
+    CO_TMR_TIME   *tn;  // FIXME: human-readable name
     int16_t        result;
 
     if (tmr == 0) {
@@ -538,6 +538,8 @@ static void COTmrRemove(CO_TMR *tmr, CO_TMR_TIME *tx)
 
             /* loop through used timers in list until timer is removed */
             tn = tmr->Use;
+
+            // FIXME: if conditional is same as do-while; change to while without if
             if (tn != 0) {
                 do {
                     /* remove next timer in list */

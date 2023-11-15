@@ -182,6 +182,7 @@ extern "C" {
 * \param f
 *    The CAN frame
 */
+// TODO: Look into static inline functions rather than PP Macro
 #define CO_GET_LONGLONG(f)  \
     (uint64_t)( ( ( (uint64_t)((f)->Data[7]) ) << 56 ) | \
                 ( ( (uint64_t)((f)->Data[6]) ) << 48 ) | \
