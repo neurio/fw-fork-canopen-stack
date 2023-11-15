@@ -514,6 +514,7 @@ static CO_ERR COCSdoDownloadSubBlock_Request( CO_CSDO *csdo ) {
     uint32_t  ticks;
     uint32_t width;
     uint32_t byte_offset;
+
     CO_IF_FRM frm;
     uint8_t cmd = 0;
     CO_CSDO_BLOCK_T* block = &csdo->Tfer.Block;
@@ -620,6 +621,7 @@ static CO_ERR COCSdoDownloadSubBlock       (CO_CSDO *csdo)
             cmd = SET_BITS( BLOCK_DOWNLOAD_CMD_CCS,                 
                             BLOCK_DOWNLOAD_CMD_SCS_CCS_BIT_OFFSET,  
                             BLOCK_DOWNLOAD_CMD_SCS_CCS_BIT_MASK);
+
             // Added for block transfer functionality
             cmd |= SET_BITS(BLOCK_DOWNLOAD_FRM_SUBBLOCK_REQUEST_SEGDATA_BYTE_SIZE - block->BytesInLastSeg,   
                             BLOCK_DOWNLOAD_CMD_END_N_BIT_OFFSET,    
