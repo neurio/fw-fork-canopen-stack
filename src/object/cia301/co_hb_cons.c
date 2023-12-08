@@ -262,7 +262,7 @@ int16_t CONmtHbConsCheck(CO_NMT *nmt, CO_IF_FRM *frm)
     int16_t    result = -1;
     uint32_t   cobid;
     uint32_t   ticks;
-    uint8_t    nodeid;
+    uint8_t    nodeid = NULL;
 
     cobid  = frm->Identifier;
     hbc    = nmt->HbCons;
