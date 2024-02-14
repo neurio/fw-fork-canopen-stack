@@ -408,6 +408,8 @@ static void COTmrReset(CO_TMR *tmr)
     }
 }
 
+#include <stdio.h>
+
 static CO_TMR_TIME *COTmrInsert(CO_TMR *tmr, uint32_t dTnew, CO_TMR_ACTION *action)
 {
     uint32_t     dTx;
@@ -440,8 +442,15 @@ static CO_TMR_TIME *COTmrInsert(CO_TMR *tmr, uint32_t dTnew, CO_TMR_ACTION *acti
         /* find position while new time interval is not reached and
          * no is timer added 
          */
+        uint16_t ticksInWhileLoop = 0;
         while ((dTnew > dTx) && (tn == 0)) {
+            ticksInWhileLoop ++;
 
+            /* this should not stick around for long, but it is a usable temporary fix */
+            if (ticksInWhileLoop > 1500) {
+                printf("\n\rCAN open timer insert locked up - breaking out!\ndTnew: %d, dTx: %d\n\r\n\r", dTnew, dTx);
+                break;
+            }
             /* last used timer: append at end of list */
             if (tx->Next == 0) {
                 /* fetch a timer */
