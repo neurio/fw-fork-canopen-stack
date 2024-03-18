@@ -448,7 +448,7 @@ static CO_TMR_TIME *COTmrInsert(CO_TMR *tmr, uint32_t dTnew, CO_TMR_ACTION *acti
 
             /* this should not stick around for long, but it is a usable temporary fix */
             if (ticksInWhileLoop > 1500) {
-                printf("\n\rCAN open timer insert locked up - breaking out!\ndTnew: %d, dTx: %d\n\r\n\r", dTnew, dTx);
+                printf("\n\rCAN open timer insert locked up - breaking out!\ndTnew: %ld, dTx: %ld\n\r\n\r", dTnew, dTx);
                 break;
             }
             /* last used timer: append at end of list */
