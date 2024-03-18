@@ -21,6 +21,8 @@
 #include "co_tmr.h"
 #include "co_core.h"
 
+#include <inttypes.h>
+
 /******************************************************************************
 * EXTERNAL FUNCTIONS
 ******************************************************************************/
@@ -448,7 +450,7 @@ static CO_TMR_TIME *COTmrInsert(CO_TMR *tmr, uint32_t dTnew, CO_TMR_ACTION *acti
 
             /* this should not stick around for long, but it is a usable temporary fix */
             if (ticksInWhileLoop > 1500) {
-                printf("\n\rCAN open timer insert locked up - breaking out!\ndTnew: %ld, dTx: %ld\n\r\n\r", dTnew, dTx);
+                printf("\n\rCAN open timer insert locked up - breaking out!\ndTnew: %" PRIu32 ", dTx: %" PRIu32 "\n\r\n\r", dTnew, dTx);
                 break;
             }
             /* last used timer: append at end of list */
