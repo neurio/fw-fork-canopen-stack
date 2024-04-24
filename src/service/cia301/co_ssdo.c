@@ -571,7 +571,7 @@ CO_ERR COSdoDownloadSegmented(CO_SDO *srv)
         srv->Buf.Num  = 0;
     }
 
-    cmd = (uint8_t)((1 << 5) | (srv->Seg.TBit << 4));
+    cmd = (uint8_t)((1U << 5U) | (srv->Seg.TBit << 4U));
     if (result == CO_ERR_NONE) {
         CO_SET_BYTE(srv->Frm, cmd, 0);
         CO_SET_BYTE(srv->Frm, 0, 1);
@@ -826,7 +826,7 @@ CO_ERR COSdoUploadBlock(CO_SDO *srv)
         srv->Buf.Num  = num;
         srv->Blk.Len += num;
         if (srv->Blk.LastValid < 7) {
-            srv->Blk.Len -= (7u - srv->Blk.LastValid);
+            srv->Blk.Len -= (7L - (uint32_t)srv->Blk.LastValid);
         }
         if (srv->Blk.SegOk > 0) {
             /* remove successful transfered bytes at the front */
